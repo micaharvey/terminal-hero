@@ -1,0 +1,1 @@
+g++ -w -o terminal-hero terminal-hero.c `pkg-config fluidsynth --libs` -lcurses
