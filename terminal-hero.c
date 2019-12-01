@@ -50,15 +50,33 @@ int main(int argc, char **argv) {
     // do our own initialization
     terminalHeroInit();
 
+    // time
+    uint64_t delta_us;
+    struct timespec start, end;
+    clock_gettime(CLOCK_MONOTONIC, &start);
+    clock_gettime(CLOCK_MONOTONIC, &end);
+
     /*-------------------\
     |----- MAIN LOOP ----|
     \-------------------*/
     while (true) {
-      refresh();
+      // clock keeping
+      clock_gettime(CLOCK_MONOTONIC, &end);
+      delta_us = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_nsec - start.tv_nsec) / 1000;
+      clock_gettime(CLOCK_MONOTONIC, &start);
+
+      // doesn't seem to be needed
+      // refresh();
 
       // book keep and update rain
-      if (h_counter++ > ITERATIONS_PER_UPDATE){
-        update();
+      h_counter += delta_us;
+      if (h_counter > MS_PER_FRAME * 1000){
+        // print debug info about frames per second
+        mvprintw(0,0,"uSeconds per getch():\t%" PRIu64 "       ", delta_us);
+        mvprintw(1,0,"uSeconds per update():\t%" PRIu64 "      ", h_counter);
+
+        // call our update function
+        update(); // this also resets the counter
       }
 
       // wait for keyboard input
@@ -71,27 +89,34 @@ int main(int argc, char **argv) {
         break;
       } 
 
-      /* test inputted key and determine direction */
+      /* test input char */
       switch (_inputChar) {
-        case KEY_UP:
-        case 'w':
-        case 'W':
-            _note = 60;
-            break;
-        case KEY_DOWN:
-        case 's':
-        case 'S':
-            _note = 48;
-            break;
         case KEY_LEFT:
         case 'a':
         case 'A':
-            _note = 55;
+            _note = 48;
+            if (y1 == FINISH_LINE) playNote(_synth, _channel, _note, _velocity);
             break;
-        case KEY_RIGHT:
+
+        case KEY_DOWN:
+        case 's':
+        case 'S':
+            _note = 50;
+            if (y2 == FINISH_LINE) playNote(_synth, _channel, _note, _velocity);
+            break;
+
+        case KEY_UP:
         case 'd':
         case 'D':
             _note = 51;
+            if (y3 == FINISH_LINE) playNote(_synth, _channel, _note, _velocity);
+            break;
+
+        case KEY_RIGHT:
+        case 'f':
+        case 'F':
+            _note = 55;
+            if (y4 == FINISH_LINE) playNote(_synth, _channel, _note, _velocity);
             break;
 
         // -1 represents no character, skip playing note
@@ -101,8 +126,6 @@ int main(int argc, char **argv) {
         default:
           continue;
         }
-
-        playNote(_synth, _channel, _note, _velocity);
     }
 
     /* Clean up synth */
@@ -124,38 +147,89 @@ int main(int argc, char **argv) {
 \--------------------------*/
 void update(void)
 {
+  // make it rain
   make_it_rain();
+
   // reset the counter
   h_counter = 0;
 }
 
 void make_it_rain(void)
 {
-  // erase trail
-  mvaddch(h_y-2, h_x, ERASE);
-  /* by default, you get a blinking cursor - but it is turned off */
-  mvaddch(h_y, h_x, NOTE);
-  // move(h_y, h_x);
-  // make_it_rain();
-  if (++h_y > LINES-1 ) {
-    mvaddch(LINES-1, h_x, ERASE);
-    mvaddch(LINES-2, h_x, ERASE);
-    h_y = 3;
+  // mvaddch(y1, NOTE_ONE_X, ACS_ULCORNER);
+  // mvaddch(y1, NOTE_ONE_X+1, ACS_URCORNER);
+  // mvaddch(y1+1, NOTE_ONE_X, ACS_LLCORNER);
+  // mvaddch(y1+1, NOTE_ONE_X+1, ACS_LRCORNER);
+  if (y1++ >= FINISH_LINE) {
+    y1 = BOARD_START_Y + 1;
   }
+  if (y2++ >= FINISH_LINE) {
+    y2 = BOARD_START_Y + 1;
+  }
+  if (y3++ >= FINISH_LINE) {
+    y3 = BOARD_START_Y + 1;
+  }
+  if (y4++ >= FINISH_LINE) {
+    y4 = BOARD_START_Y + 1;
+  }
+
+  mvaddch(y1-1, NOTE_ONE_X, ERASE);
+  mvaddch(y2-1, NOTE_TWO_X, ERASE);
+  mvaddch(y3-1, NOTE_THREE_X, ERASE);
+  mvaddch(y4-1, NOTE_FOUR_X, ERASE);
+
+  mvaddch(y1, NOTE_ONE_X, ACS_DIAMOND);
+  mvaddch(y2, NOTE_TWO_X, ACS_DIAMOND);
+  mvaddch(y3, NOTE_THREE_X, ACS_DIAMOND);
+  mvaddch(y4, NOTE_FOUR_X, ACS_DIAMOND);
 }
 
 void terminalHeroInit(void) {
   // Prepare world
-    draw_board();
-    h_y = 3;
-    h_x = 11;
-    h_counter = 0;
+  draw_board();
+  y1 = BOARD_START_Y;
+  y2 = BOARD_START_Y+4;
+  y3 = BOARD_START_Y+2;
+  y4 = BOARD_START_Y+4;
+  h_counter = 0;
 }
 
 void draw_board(void)
 {
-  mvvline(3, LINES, '|', COLS);
-  mvvline(3, 9, '|', COLS);
+  mvaddch(BOARD_START_Y-1, BOARD_START_X, ACS_ULCORNER);
+  mvaddch(BOARD_START_Y-1, BOARD_START_X + BOARD_WIDTH, ACS_URCORNER);
+  mvhline(BOARD_START_Y-1, BOARD_START_X+1, ACS_HLINE, BOARD_WIDTH-1);
+  mvvline(BOARD_START_Y, BOARD_START_X, ACS_VLINE, BOARD_HEIGHT);
+  mvvline(BOARD_START_Y, BOARD_START_X + BOARD_WIDTH, ACS_VLINE, BOARD_HEIGHT);
+  mvhline(FINISH_LINE, BOARD_START_X+1, ACS_HLINE, BOARD_WIDTH-1);
+  mvaddch(FINISH_LINE, BOARD_START_X, ACS_LLCORNER);
+  mvaddch(FINISH_LINE, BOARD_START_X + BOARD_WIDTH, ACS_LRCORNER);
+
+  mvaddch(BOARD_START_Y-1, NOTE_ONE_X, ERASE);
+  mvaddch(BOARD_START_Y-1, NOTE_TWO_X, ERASE);
+  mvaddch(BOARD_START_Y-1, NOTE_THREE_X, ERASE);
+  mvaddch(BOARD_START_Y-1, NOTE_FOUR_X, ERASE);
+
+  mvaddch(FINISH_LINE, NOTE_ONE_X, ACS_DIAMOND);
+  mvaddch(FINISH_LINE, NOTE_TWO_X, ACS_DIAMOND);
+  mvaddch(FINISH_LINE, NOTE_THREE_X, ACS_DIAMOND);
+  mvaddch(FINISH_LINE, NOTE_FOUR_X, ACS_DIAMOND);
+
+  mvaddch(FINISH_LINE+1, NOTE_ONE_X, 'a');
+  mvaddch(FINISH_LINE+1, NOTE_TWO_X, 's');
+  mvaddch(FINISH_LINE+1, NOTE_THREE_X, 'd');
+  mvaddch(FINISH_LINE+1, NOTE_FOUR_X, 'f');
+
+  move(FINISH_LINE+2, 0);
+
+  printw("                           ____         ___\n");
+  printw("                         ,' __ ``.._..''   `.\n");
+  printw("                         `.`. ``-.___..-.    :\n");
+  printw(" ,---..____________________>/          _,'_  |\n");
+  printw(" `-:._,:_|_|_|_|_|_|_|_|_|_|_|.:SSt:.:|-|(/  |\n");
+  printw("                        _.' )   ____  '-'    ;\n");
+  printw("                       (    `-''  __``-'    /\n");
+  printw("                        ``-....-''  ``-..-''\n");
 }
 
 void cursesInit(void){

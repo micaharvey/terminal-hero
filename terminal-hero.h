@@ -1,20 +1,32 @@
-// HEADER FOR DEMO PROGRAM
+// termina-hero.h
 //   Here be Constants, Global Variables, Structs, and Function References
 //   Oh also a copy/paste of the general midi specification
 #include <stdlib.h>
 #include <iostream>
+#include <time.h>
+#include <inttypes.h>
+
+#define ERASE     ' '
 
 /* Constants */
 const unsigned int DRUM_CHANNEL = 9;
-const unsigned int ITERATIONS_PER_UPDATE = 5000;
+const unsigned int MS_PER_FRAME = 150;
+const unsigned int BOARD_START_X = 10;
+const unsigned int BOARD_START_Y = 3;
+const unsigned int BOARD_WIDTH = 8;
+const unsigned int BOARD_HEIGHT = 8;
+
+const unsigned int NOTE_ONE_X = BOARD_START_X + 1;
+const unsigned int NOTE_TWO_X = BOARD_START_X + 3;
+const unsigned int NOTE_THREE_X = BOARD_START_X + 5;
+const unsigned int NOTE_FOUR_X = BOARD_START_X + 7;
+
+const unsigned int FINISH_LINE = BOARD_START_Y + BOARD_HEIGHT;
 
 /* Globals */
 int h_x, h_y;
-int h_counter;
-
-#define ERASE     ' '
-#define WATER     '^'
-#define NOTE      '*'
+int y1, y2, y3, y4;
+uint64_t h_counter;
 
 /* Structs */
 struct padSetting {
