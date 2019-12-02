@@ -15,16 +15,14 @@ const unsigned int BOARD_START_X = 10;
 const unsigned int BOARD_START_Y = 3;
 const unsigned int BOARD_WIDTH = 8;
 const unsigned int BOARD_HEIGHT = 8;
+const unsigned int FINISH_LINE = BOARD_START_Y + BOARD_HEIGHT;
 
 const unsigned int NOTE_ONE_X = BOARD_START_X + 1;
 const unsigned int NOTE_TWO_X = BOARD_START_X + 3;
 const unsigned int NOTE_THREE_X = BOARD_START_X + 5;
 const unsigned int NOTE_FOUR_X = BOARD_START_X + 7;
 
-const unsigned int FINISH_LINE = BOARD_START_Y + BOARD_HEIGHT;
-
 /* Globals */
-int h_x, h_y;
 int y1, y2, y3, y4;
 uint64_t h_counter;
 
