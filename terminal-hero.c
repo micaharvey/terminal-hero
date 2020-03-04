@@ -130,15 +130,17 @@ int main(int argc, char **argv)
         }
     }
 
-    /* Clean up synth */
+    /* Clean up fluidsynth */
     delete_fluid_audio_driver(_adriver);
     delete_fluid_synth(_synth);
     delete_fluid_settings(_settings);
+
     /* Clean up curses */
     endwin();
 
     /* Say Goodbye */
     std::cout << std::endl <<  "Thanks for playing!" << std::endl;
+
     /* End program successfully */
     return 0;
 }
@@ -196,10 +198,14 @@ void terminalHeroInit(void)
 {
   // Prepare world
   draw_board();
+
+  // set our notes up
   y1 = BOARD_START_Y;
   y2 = BOARD_START_Y+4;
   y3 = BOARD_START_Y+2;
   y4 = BOARD_START_Y+4;
+
+  // init counter
   h_counter = 0;
 }
 
@@ -255,7 +261,8 @@ void cursesInit(void)
     // init screen
     initscr();
 
-    nonl(); /* tell curses not to do NL->CR/NL on output */
+    // tell curses not to do NL->CR/NL on output
+    nonl();
     intrflush(stdscr, FALSE);
 
     // grant ability to read arrow keays
@@ -275,7 +282,8 @@ void cursesInit(void)
     // getch waits until a key is pressed.
     nodelay(stdscr, true);
 
-    curs_set( 0 ); // hide the default screen cursor.
+    // hide the default screen cursor.
+    curs_set( 0 );
 
     if (has_colors()) {
         start_color();
@@ -290,7 +298,7 @@ void cursesInit(void)
     }
 }
 
-// Play a note on the synth.  This will only do a "stab" not a held note currently.
+// Play a note on the synth.
 void playNote(fluid_synth_t* synth, int channel, int note, int velocity)
 {
   /* Play a note */

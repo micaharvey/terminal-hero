@@ -1,4 +1,4 @@
-// termina-hero.h
+// terminal-hero.h
 //   Here be Constants, Global Variables, Structs, and Function References
 //   Oh also a copy/paste of the general midi specification
 #include <stdlib.h>
@@ -25,12 +25,6 @@ const unsigned int NOTE_FOUR_X = BOARD_START_X + 7;
 /* Globals */
 int y1, y2, y3, y4;
 uint64_t h_counter;
-
-/* Structs */
-struct padSetting {
-  int channel;
-  int program;
-};
 
 /* Funcion References */
 void playNote(fluid_synth_t* synth, int channel, int key, int velocity);
