@@ -17,7 +17,7 @@ int main(int argc, char **argv)
 {
   Options options;
   options.process(argc, argv);
-  if (options.getArgCount() == 0) midifile.read(cin);
+  if (options.getArgCount() == 0) midifile.read("resources/midi-files/twinkle_twinkle.mid");
   else midifile.read(options.getArg(1));
   midifile.doTimeAnalysis();
   midifile.linkNotePairs();
@@ -59,7 +59,7 @@ int main(int argc, char **argv)
   int _program = 25;
 
   // Reset to Piano
-  // _program = 0;
+  _program = 0;
 
   // Create the synth and apply settings.
   _settings = new_fluid_settings();
@@ -180,11 +180,6 @@ void update(void)
 
 void make_it_rain(void)
 {
-  // mvaddch(y1, NOTE_ONE_X, ACS_ULCORNER);
-  // mvaddch(y1, NOTE_ONE_X+1, ACS_URCORNER);
-  // mvaddch(y1+1, NOTE_ONE_X, ACS_LLCORNER);
-  // mvaddch(y1+1, NOTE_ONE_X+1, ACS_LRCORNER);
-
   for (int i = 0; i < BOARD_HEIGHT - 1; i++) {
     a_column[i] = a_column[i + 1];
     if (a_column[i] > 0) {
@@ -221,7 +216,6 @@ void make_it_rain(void)
       mvaddch(FINISH_LINE - i, NOTE_FOUR_X, ACS_DIAMOND);
     }
   }
-
 
   a_column[BOARD_HEIGHT - 1] = 0;
   s_column[BOARD_HEIGHT - 1] = 0;

@@ -33,12 +33,26 @@ Compile the code
 source compile.sh
 ```
 
-Run terminal-hero
+Run terminal-hero (Play twinkle twinkle by default)
 
 ```
 ./terminal-hero
 ```
 
-Press q to [q]uit.
+Play Happy Birthday
 
-Enjoy the rain for now
+```
+./terminal-hero resources/midi-files/happy_birthday.mid
+```
+
+Load and automatically play your own midi file (experimental)
+
+```
+./terminal-hero /absolute/or/relative/path/to/my/midifile.mid
+```
+
+## Becoming the Terminal Hero
+
+Play notes with `A`, `S`, `D`, and `F` Keys as the notes reach the bottom of the board.
+
+Press `Q` to [Q]uit.
