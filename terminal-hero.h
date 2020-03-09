@@ -1,10 +1,28 @@
-// terminal-hero.h
-//   Here be Constants, Global Variables, Structs, and Function References
-//   Oh also a copy/paste of the general midi specification
+/* terminal-hero.h
+
+Here be Constants, Global Variables, Structs, and Function References
+Oh also a copy/paste of the general midi specification
+
+Libraries:
+ncurses - stream of keyboard input in ~real time - https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man3/ncurses.3x.html
+fluidsynth - software synthesizer - http://www.fluidsynth.org/
+midifile - midi file reader - https://github.com/craigsapp/midifile
+*/
+
+#include <ncurses.h>
+#include <fluidsynth.h>
+
 #include <stdlib.h>
 #include <iostream>
 #include <time.h>
 #include <inttypes.h>
+#include "MidiFile.h"
+#include "Options.h"
+#include <iostream>
+#include <iomanip>
+
+using namespace std;
+using namespace smf;
 
 #define ERASE     ' '
 
@@ -12,9 +30,9 @@
 const unsigned int DRUM_CHANNEL = 9;
 const unsigned int MS_PER_FRAME = 150;
 const unsigned int BOARD_START_X = 10;
-const unsigned int BOARD_START_Y = 3;
+const unsigned int BOARD_START_Y = 4;
 const unsigned int BOARD_WIDTH = 8;
-const unsigned int BOARD_HEIGHT = 8;
+const unsigned int BOARD_HEIGHT = 16;
 const unsigned int FINISH_LINE = BOARD_START_Y + BOARD_HEIGHT;
 
 const unsigned int NOTE_ONE_X = BOARD_START_X + 1;
@@ -22,9 +40,24 @@ const unsigned int NOTE_TWO_X = BOARD_START_X + 3;
 const unsigned int NOTE_THREE_X = BOARD_START_X + 5;
 const unsigned int NOTE_FOUR_X = BOARD_START_X + 7;
 
+const bool DEBUG = false;
+const unsigned int DEBUG_LINE_START_Y = FINISH_LINE + 10;
+
 /* Globals */
-int y1, y2, y3, y4;
-uint64_t h_counter;
+int a_column[BOARD_HEIGHT] = { };
+int s_column[BOARD_HEIGHT] = { };
+int d_column[BOARD_HEIGHT] = { };
+int f_column[BOARD_HEIGHT] = { };
+
+// time
+uint64_t delta_us, now, frameStart;
+struct timespec beginningOfTime, nowTime, frameStartTime, loopStartTime, loopEndTime;
+
+int BPM = 120;
+int currEvent = 0;
+float ms_per_update = 1000.0f / ((BPM / 60.0f) * 2.0f);
+
+MidiFile midifile;
 
 /* Funcion References */
 void playNote(fluid_synth_t* synth, int channel, int key, int velocity);
@@ -33,6 +66,8 @@ void terminalHeroInit(void);
 void update(void);
 void draw_board(void);
 void make_it_rain(void);
+
+int spawnNote(void);
 
 /*---------------------------\
 | GENERAL MIDI SPECIFICATION |
