@@ -34,6 +34,7 @@ const unsigned int BOARD_START_Y = 4;
 const unsigned int BOARD_WIDTH = 8;
 const unsigned int BOARD_HEIGHT = 16;
 const unsigned int FINISH_LINE = BOARD_START_Y + BOARD_HEIGHT;
+const unsigned int SCOREBOARD = FINISH_LINE + 3;
 
 const unsigned int NOTE_ONE_X = BOARD_START_X + 1;
 const unsigned int NOTE_TWO_X = BOARD_START_X + 3;
@@ -42,6 +43,8 @@ const unsigned int NOTE_FOUR_X = BOARD_START_X + 7;
 
 const bool DEBUG = false;
 const unsigned int DEBUG_LINE_START_Y = FINISH_LINE + 10;
+
+const unsigned int BASE_SCORE_INCREMENT = 10;
 
 /* Globals */
 int a_column[BOARD_HEIGHT] = { };
@@ -53,10 +56,16 @@ int f_column[BOARD_HEIGHT] = { };
 uint64_t delta_us, now, frameStart;
 struct timespec beginningOfTime, nowTime, frameStartTime, loopStartTime, loopEndTime;
 
+// timing
 int BPM = 120;
 int currEvent = 0;
 float ms_per_update = 1000.0f / ((BPM / 60.0f) * 2.0f);
 
+// score
+int score = 0;
+int streak = 0;
+
+// midifile
 MidiFile midifile;
 
 /* Funcion References */
@@ -68,6 +77,7 @@ void draw_board(void);
 void make_it_rain(void);
 
 int spawnNote(void);
+void updateScoreboard(void);
 
 /*---------------------------\
 | GENERAL MIDI SPECIFICATION |

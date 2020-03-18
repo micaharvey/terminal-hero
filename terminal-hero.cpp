@@ -121,28 +121,48 @@ int main(int argc, char **argv)
     case 'a':
     case 'A':
       _note = 48;
-      if (a_column[0]) playNote(_synth, _channel, a_column[0], _velocity);
+      if (a_column[0]) {
+        playNote(_synth, _channel, a_column[0], _velocity);
+      }
+      else {
+        streak = 0;
+      }
       break;
 
     case KEY_DOWN:
     case 's':
     case 'S':
       _note = 50;
-      if (s_column[0]) playNote(_synth, _channel, s_column[0], _velocity);
+      if (s_column[0]) {
+        playNote(_synth, _channel, s_column[0], _velocity);
+      }
+      else {
+        streak = 0;
+      }
       break;
 
     case KEY_UP:
     case 'd':
     case 'D':
       _note = 51;
-      if (d_column[0]) playNote(_synth, _channel, d_column[0], _velocity);
+      if (d_column[0]) {
+        playNote(_synth, _channel, d_column[0], _velocity);
+      }
+      else {
+        streak = 0;
+      }
       break;
 
     case KEY_RIGHT:
     case 'f':
     case 'F':
       _note = 55;
-      if (f_column[0]) playNote(_synth, _channel, f_column[0], _velocity);
+      if (f_column[0]) {
+        playNote(_synth, _channel, f_column[0], _velocity);
+      }
+      else {
+        streak = 0;
+      }
       break;
 
     // -1 represents no character, skip playing note
@@ -176,6 +196,9 @@ void update(void)
 {
   // make it rain
   make_it_rain();
+
+  //update Scoreboard
+  updateScoreboard();
 }
 
 void make_it_rain(void)
@@ -359,6 +382,10 @@ void playNote(fluid_synth_t* synth, int channel, int note, int velocity)
   fluid_synth_noteon(synth, channel, note, velocity);
   /* Stop the note */
   // fluid_synth_noteoff(synth, channel, note);
+
+  // increase scoreboard
+  score += BASE_SCORE_INCREMENT;
+  streak++;
 }
 
 int spawnNote(void) {
@@ -391,4 +418,10 @@ int spawnNote(void) {
   }
 
   return note;
+}
+
+void updateScoreboard(void) {
+  attrset(COLOR_PAIR(7)); // DEFAULT
+  mvprintw(SCOREBOARD, BOARD_START_X, "Score: %d", score );
+  mvprintw(SCOREBOARD + 1, BOARD_START_X, "Streak: %d    ", streak );
 }

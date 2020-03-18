@@ -1,1 +1,1 @@
-g++ -w -o terminal-hero terminal-hero.cpp -Iinclude /Users/micaharvey/code/github/terminal-hero/lib/libmidifile.a `pkg-config fluidsynth --libs` -lcurses
+g++ -w -o terminal-hero terminal-hero.cpp -Iinclude ./lib/libmidifile.a `pkg-config fluidsynth --libs` -lcurses
