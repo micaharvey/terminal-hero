@@ -19,6 +19,7 @@ int main(int argc, char **argv)
   options.process(argc, argv);
   if (options.getArgCount() == 0) midifile.read("resources/midi-files/twinkle_twinkle.mid");
   else midifile.read(options.getArg(1));
+  midifile.joinTracks();
   midifile.doTimeAnalysis();
   midifile.linkNotePairs();
 
